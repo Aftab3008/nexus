@@ -1,0 +1,2 @@
+- [ ] Make username field unique. Allow user entry and check availability using 'by_username' index. `high` — 2026-02-16
+- [ ] Improve Date of Birth picker: auto-advance focus from Day -> Month -> Year. `high` — 2026-02-16
