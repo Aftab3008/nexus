@@ -2,6 +2,9 @@ import db from "@/lib/db/db";
 import { createTRPCRouter, protectedProcedure } from "../init";
 import { z } from "zod";
 import { PAGINATION } from "@/constants";
+import { TRPCError } from "@trpc/server";
+import { NodeType } from "@/generated/prisma/enums";
+import type { Edge, Node } from "@xyflow/react";
 
 export const workflowRouter = createTRPCRouter({
   createWorkflow: protectedProcedure.mutation(async ({ ctx }) => {
@@ -9,6 +12,16 @@ export const workflowRouter = createTRPCRouter({
       data: {
         name: "Untitled Workflow",
         userId: ctx.auth.user.id,
+        nodes: {
+          create: {
+            name: NodeType.INITIAL,
+            type: NodeType.INITIAL,
+            position: {
+              x: 0,
+              y: 0,
+            },
+          },
+        },
       },
     });
     return workflow;
@@ -54,8 +67,44 @@ export const workflowRouter = createTRPCRouter({
           id: input.id,
           userId: ctx.auth.user.id,
         },
+        include: {
+          nodes: true,
+          connections: true,
+        },
       });
-      return workflow;
+
+      if (!workflow) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Workflow not found",
+        });
+      }
+
+      const nodes: Node[] = workflow.nodes.map((node) => {
+        return {
+          id: node.id,
+          type: node.type,
+          position: node.position as { x: number; y: number },
+          data: (node.data as Record<string, unknown>) || {},
+        };
+      });
+
+      const edges: Edge[] = workflow.connections.map((connection) => {
+        return {
+          id: connection.id,
+          source: connection.fromNodeId,
+          target: connection.toNodeId,
+          sourceHandle: connection.fromOutput,
+          targetHandle: connection.toInput,
+        };
+      });
+
+      return {
+        id: workflow.id,
+        name: workflow.name,
+        nodes,
+        edges,
+      };
     }),
 
   getWorkflows: protectedProcedure
