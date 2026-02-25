@@ -20,6 +20,7 @@ function getQueryClient() {
   // Browser: use singleton pattern to keep the same query client
   return (clientQueryClientSingleton ??= makeQueryClient());
 }
+
 function getUrl() {
   const base = (() => {
     if (typeof window !== "undefined") return "";
