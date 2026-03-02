@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Nexus",
   description: "Nexus is a platform for building and deploying AI agents.",
+  icons: {
+    icon: "/logos/logo.svg",
+  },
 };
 
 export default function RootLayout({
