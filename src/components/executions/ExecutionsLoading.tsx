@@ -1,5 +1,5 @@
 import { LoadingView } from "../shared/entity-components";
 
-export const CredentialsLoading = () => {
+export const ExecutionsLoading = () => {
   return <LoadingView />;
 };

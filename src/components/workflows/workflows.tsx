@@ -126,7 +126,7 @@ export const WorkflowsContainer = ({
 };
 
 export const WorkflowsLoading = () => {
-  return <LoadingView message="Loading workflows..." />;
+  return <LoadingView />;
 };
 
 export const WorkflowsError = () => {

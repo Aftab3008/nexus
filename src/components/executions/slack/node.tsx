@@ -2,36 +2,35 @@
 
 import { memo, useState } from "react";
 import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
-import { GEMINI_CHANNEL_NAME } from "@/inngest/channels/gemini";
+import { SLACK_CHANNEL_NAME } from "@/inngest/channels/slack";
 import { useNodeStatus } from "@/hooks/nodes/use-node-status";
+import { fetchSlackRealtimeToken } from "@/lib/nodes/slack.actions";
+import { SlackDialog } from "./SlackDialog";
 import { BaseExecutionNode } from "../BaseExecutionNode";
-import { GeminiDialog } from "./GeminiDialog";
-import { fetchGeminiRealtimeToken } from "@/lib/nodes/gemini.actions";
-import { GeminiFormTypes } from "@/lib/schema/ai-forms.schema";
+import { SlackFormTypes } from "@/lib/schema/slack.schema";
 
-type GeminiNodeData = {
+type SlackNodeData = {
   variableName?: string;
-  credentialId?: string;
-  systemPrompt?: string;
-  userPrompt?: string;
+  webhookUrl?: string;
+  content?: string;
 };
 
-type GeminiNodeType = Node<GeminiNodeData>;
+type SlackNodeType = Node<SlackNodeData>;
 
-export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
+export const SlackNode = memo((props: NodeProps<SlackNodeType>) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setNodes } = useReactFlow();
 
   const nodeStatus = useNodeStatus({
     nodeId: props.id,
-    channel: GEMINI_CHANNEL_NAME,
+    channel: SLACK_CHANNEL_NAME,
     topic: "status",
-    refreshToken: fetchGeminiRealtimeToken,
+    refreshToken: fetchSlackRealtimeToken,
   });
 
   const handleOpenSettings = () => setDialogOpen(true);
 
-  const handleSubmit = (values: GeminiFormTypes) => {
+  const handleSubmit = (values: SlackFormTypes) => {
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === props.id) {
@@ -43,13 +42,13 @@ export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
   };
 
   const nodeData = props.data;
-  const description = nodeData?.userPrompt
-    ? `"gemini-2.5-flash": ${nodeData.userPrompt.slice(0, 50)}...`
+  const description = nodeData?.content
+    ? `Send: ${nodeData.content.slice(0, 50)}...`
     : "Not configured";
 
   return (
     <>
-      <GeminiDialog
+      <SlackDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSubmit={handleSubmit}
@@ -58,8 +57,8 @@ export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
       <BaseExecutionNode
         {...props}
         id={props.id}
-        icon="/logos/gemini.svg"
-        name="Gemini"
+        icon="/logos/slack.svg"
+        name="Slack"
         status={nodeStatus}
         description={description}
         onSettings={handleOpenSettings}
@@ -69,4 +68,4 @@ export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
   );
 });
 
-GeminiNode.displayName = "GeminiNode";
+SlackNode.displayName = "SlackNode";

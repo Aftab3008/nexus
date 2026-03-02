@@ -1,7 +1,9 @@
 import { AnthropicNode } from "@/components/executions/anthropic/node";
+import { DiscordNode } from "@/components/executions/discord/node";
 import { GeminiNode } from "@/components/executions/gemini/node";
 import { HttpRequestNode } from "@/components/executions/http-request/node";
 import { OpenAiNode } from "@/components/executions/open-ai/node";
+import { SlackNode } from "@/components/executions/slack/node";
 import { InitialNode } from "@/components/nodes/InitialNode";
 import { GoogleFormTriggerNode } from "@/components/triggers/google-form-trigger/node";
 import { ManualTriggerNode } from "@/components/triggers/manual-trigger/node";
@@ -18,6 +20,8 @@ export const nodeComponents = {
   [NodeType.GEMINI]: GeminiNode,
   [NodeType.OPENAI]: OpenAiNode,
   [NodeType.ANTHROPIC]: AnthropicNode,
+  [NodeType.DISCORD]: DiscordNode,
+  [NodeType.SLACK]: SlackNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

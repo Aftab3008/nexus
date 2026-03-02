@@ -2,9 +2,12 @@
 
 import { useSuspenseCredentials } from "@/hooks/credentials/use-credentials";
 import { EntityList } from "../shared/entity-components";
-import { Credential } from "@/generated/prisma/client";
 import { CredentialItem } from "./CredentialItem";
 import { CredentialsEmpty } from "./CredentialsEmpty";
+
+type CredentialData = ReturnType<
+  typeof useSuspenseCredentials
+>[0]["items"][number];
 
 export const CredentialsList = () => {
   const [data] = useSuspenseCredentials();
@@ -12,8 +15,8 @@ export const CredentialsList = () => {
   return (
     <EntityList
       items={data.items}
-      getKey={(credential: Credential) => credential.id}
-      renderItem={(credential: Credential) => (
+      getKey={(credential: CredentialData) => credential.id}
+      renderItem={(credential: CredentialData) => (
         <CredentialItem data={credential} />
       )}
       emptyView={<CredentialsEmpty />}

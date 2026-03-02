@@ -81,29 +81,26 @@ export const credentialsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { page, pageSize, search } = input;
 
-      const [items, totalCount] = await Promise.all([
+      const where = {
+        userId: ctx.auth.user.id,
+        name: { contains: search, mode: "insensitive" as const },
+      };
+
+      const [items, totalCount] = await db.$transaction([
         db.credential.findMany({
           skip: (page - 1) * pageSize,
           take: pageSize,
-          where: {
-            userId: ctx.auth.user.id,
-            name: { contains: search, mode: "insensitive" },
-          },
+          where,
           orderBy: { updatedAt: "desc" },
         }),
-        db.credential.count({
-          where: {
-            userId: ctx.auth.user.id,
-            name: { contains: search, mode: "insensitive" },
-          },
-        }),
+        db.credential.count({ where }),
       ]);
 
       const totalPages = Math.ceil(totalCount / pageSize);
       const hasNextPage = page < totalPages;
       const hasPreviousPage = page > 1;
 
-      return {
+      const result = {
         items,
         page,
         pageSize,
@@ -112,6 +109,8 @@ export const credentialsRouter = createTRPCRouter({
         hasNextPage,
         hasPreviousPage,
       };
+
+      return result;
     }),
   getCredentialsByType: protectedProcedure
     .input(z.object({ type: z.enum(CredentialType) }))

@@ -146,7 +146,7 @@ export const workflowRouter = createTRPCRouter({
       const hasNextPage = page < totalPages;
       const hasPreviousPage = page > 1;
 
-      return {
+      const result = {
         workflows: items,
         page,
         pageSize,
@@ -155,6 +155,8 @@ export const workflowRouter = createTRPCRouter({
         hasNextPage,
         hasPreviousPage,
       };
+
+      return result;
     }),
   update: protectedProcedure
     .input(

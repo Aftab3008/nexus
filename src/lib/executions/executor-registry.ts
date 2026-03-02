@@ -6,6 +6,8 @@ import { manualTriggerExecutor } from "./manual-trigger.executor";
 import { googleFormTriggerExecutor } from "./google-form.executor";
 import { stripeTriggerExecutor } from "./stripe-trigger.executor";
 import { anthropicExecutor } from "./anthropic.executor";
+import { discordExecutor } from "./discord.executor";
+import { slackExecutor } from "./slack.executor";
 
 export const executorRegistry = new Map<NodeType, NodeExecutor<any>>([
   [NodeType.INITIAL, initialExecutor],
@@ -14,6 +16,8 @@ export const executorRegistry = new Map<NodeType, NodeExecutor<any>>([
   [NodeType.GOOGLE_FORM_TRIGGER, googleFormTriggerExecutor],
   [NodeType.STRIPE_TRIGGER, stripeTriggerExecutor],
   [NodeType.ANTHROPIC, anthropicExecutor],
+  [NodeType.DISCORD, discordExecutor],
+  [NodeType.SLACK, slackExecutor],
 ]);
 
 export const getExecutor = (nodeType: NodeType): NodeExecutor<any> => {
