@@ -17,7 +17,7 @@ export const polarPlugin = polar({
           slug: "pro",
         },
       ],
-      successUrl: "http://localhost:3000",
+      successUrl: process.env.BETTER_AUTH_URL || "http://localhost:3000",
       authenticatedUsersOnly: true,
     }),
     portal(),

@@ -154,6 +154,8 @@ model Credential {
   userId    String
   user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   Node      Node[]
+
+  @@map("credential")
 }
 
 enum CredentialType {
@@ -173,4 +175,6 @@ model Executions {
   completedAt    DateTime?
   inngestEventId String          @unique
   output         Json?
+
+  @@map("execution")
 }
