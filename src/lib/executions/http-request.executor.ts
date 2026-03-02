@@ -1,11 +1,8 @@
+import { httpRequestChannel } from "@/inngest/channels/http-request";
 import { NodeExecutor } from "@/types/executions.types";
+import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
-import Handlebars from "handlebars";
-import { httpRequestChannel } from "@/inngest/channels/http-request";
-import { manualTriggerChannel } from "@/inngest/channels/manual-trigger";
-import { googleFormTriggerChannel } from "@/inngest/channels/google-form-trigger";
-import { stripeTriggerChannel } from "@/inngest/channels/stripe-trigger";
 
 Handlebars.registerHelper("json", (value) => {
   const jsonString = JSON.stringify(value, null, 2);
@@ -14,32 +11,11 @@ Handlebars.registerHelper("json", (value) => {
   return safeString;
 });
 
-type ManualTriggerData = Record<string, unknown>;
-type GoogleFormTriggerData = Record<string, unknown>;
-
 type HttpRequestData = {
   variableName: string;
   endpoint: string;
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: string;
-};
-
-type InitialData = Record<string, unknown>;
-type StripeTriggerData = Record<string, unknown>;
-
-export const manualTriggerExecutor: NodeExecutor<ManualTriggerData> = async ({
-  nodeId,
-  context,
-  step,
-  publish,
-}) => {
-  await publish(manualTriggerChannel().status({ nodeId, status: "loading" }));
-
-  const result = await step.run("manual-trigger", async () => context);
-
-  await publish(manualTriggerChannel().status({ nodeId, status: "success" }));
-
-  return result;
 };
 
 export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
@@ -108,46 +84,4 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
     await publish(httpRequestChannel().status({ nodeId, status: "error" }));
     throw error;
   }
-};
-
-export const initialExecutor: NodeExecutor<InitialData> = async ({
-  nodeId,
-  context,
-  step,
-  publish,
-}) => {
-  const result = await step.run("initial", async () => context);
-
-  return result;
-};
-
-export const googleFormTriggerExecutor: NodeExecutor<
-  GoogleFormTriggerData
-> = async ({ nodeId, context, step, publish }) => {
-  await publish(
-    googleFormTriggerChannel().status({ nodeId, status: "loading" }),
-  );
-
-  const result = await step.run("google-form-trigger", async () => context);
-
-  await publish(
-    googleFormTriggerChannel().status({ nodeId, status: "success" }),
-  );
-
-  return result;
-};
-
-export const stripeTriggerExecutor: NodeExecutor<StripeTriggerData> = async ({
-  nodeId,
-  context,
-  step,
-  publish,
-}) => {
-  await publish(stripeTriggerChannel().status({ nodeId, status: "loading" }));
-
-  const result = await step.run("stripe-trigger", async () => context);
-
-  await publish(stripeTriggerChannel().status({ nodeId, status: "success" }));
-
-  return result;
 };

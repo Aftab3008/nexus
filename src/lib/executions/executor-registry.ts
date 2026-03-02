@@ -1,12 +1,11 @@
 import { NodeType } from "@/generated/prisma/enums";
 import { NodeExecutor } from "@/types/executions.types";
-import {
-  googleFormTriggerExecutor,
-  httpRequestExecutor,
-  initialExecutor,
-  manualTriggerExecutor,
-  stripeTriggerExecutor,
-} from "./executor";
+import { initialExecutor } from "./initial.executor";
+import { httpRequestExecutor } from "./http-request.executor";
+import { manualTriggerExecutor } from "./manual-trigger.executor";
+import { googleFormTriggerExecutor } from "./google-form.executor";
+import { stripeTriggerExecutor } from "./stripe-trigger.executor";
+import { anthropicExecutor } from "./anthropic.executor";
 
 export const executorRegistry = new Map<NodeType, NodeExecutor<any>>([
   [NodeType.INITIAL, initialExecutor],
@@ -14,6 +13,7 @@ export const executorRegistry = new Map<NodeType, NodeExecutor<any>>([
   [NodeType.MANUAL_TRIGGER, manualTriggerExecutor],
   [NodeType.GOOGLE_FORM_TRIGGER, googleFormTriggerExecutor],
   [NodeType.STRIPE_TRIGGER, stripeTriggerExecutor],
+  [NodeType.ANTHROPIC, anthropicExecutor],
 ]);
 
 export const getExecutor = (nodeType: NodeType): NodeExecutor<any> => {
