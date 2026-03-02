@@ -25,6 +25,7 @@ import "@xyflow/react/dist/style.css";
 import { useCallback, useMemo, useState } from "react";
 import { useSetAtom } from "jotai";
 import { editorAtom } from "@/store/atoms";
+import { ExecuteWorkflowButton } from "./ExecuteWorkflowButton";
 
 export default function Editor({ workflowId }: { workflowId: string }) {
   const [workflow] = useWorkflowById(workflowId);
@@ -82,8 +83,7 @@ export default function Editor({ workflowId }: { workflowId: string }) {
         </Panel>
         {hasManualTrigger && (
           <Panel position="bottom-center">
-            {/* <ExecuteWorkflowButton workflowId={workflowId} /> */}
-            <p>Execute Workflow</p>
+            <ExecuteWorkflowButton workflowId={workflowId} />
           </Panel>
         )}
       </ReactFlow>

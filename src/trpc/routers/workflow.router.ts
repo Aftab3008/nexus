@@ -1,13 +1,18 @@
 import db from "@/lib/db/db";
-import { createTRPCRouter, protectedProcedure } from "../init";
+import {
+  createTRPCRouter,
+  premiumProcedure,
+  protectedProcedure,
+} from "../init";
 import { z } from "zod";
 import { PAGINATION } from "@/constants";
 import { TRPCError } from "@trpc/server";
 import { NodeType } from "@/generated/prisma/enums";
 import type { Edge, Node } from "@xyflow/react";
+import { inngest } from "@/inngest/client";
 
 export const workflowRouter = createTRPCRouter({
-  createWorkflow: protectedProcedure.mutation(async ({ ctx }) => {
+  createWorkflow: premiumProcedure.mutation(async ({ ctx }) => {
     const workflow = await db.workflow.create({
       data: {
         name: "Untitled Workflow",
@@ -217,5 +222,20 @@ export const workflowRouter = createTRPCRouter({
 
         return workflow;
       });
+    }),
+
+  execute: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const workflow = await db.workflow.findUniqueOrThrow({
+        where: { id: input.id, userId: ctx.auth.user.id },
+      });
+
+      // await sendWorkflowExecution({ workflowId: input.id });
+      await inngest.send({
+        name: "workflows/execute.workflow",
+        data: { workflowId: input.id },
+      });
+      return workflow;
     }),
 });

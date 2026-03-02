@@ -65,3 +65,18 @@ export const useUpdateWorkflow = () => {
     },
   });
 };
+
+export const useExecuteWorkflow = () => {
+  const utils = trpc.useUtils();
+
+  return trpc.workflows.execute.useMutation({
+    onSuccess: (data) => {
+      toast.success(`${data.name} execution started`);
+      void utils.workflows.getWorkflows.invalidate();
+      void utils.workflows.getWorkflowById.invalidate({ id: data.id });
+    },
+    onError: (error) => {
+      toast.error(`Failed to execute: ${error.message}`);
+    },
+  });
+};

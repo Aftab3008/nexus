@@ -6,6 +6,9 @@ import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import { BaseExecutionNode } from "../BaseExecutionNode";
 import { HttpRequestDialog } from "./HttpRequestDialog";
 import { HttpRequestFormTypes } from "@/lib/schema/http.schema";
+import { useNodeStatus } from "@/hooks/nodes/use-node-status";
+import { HTTP_REQUEST_CHANNEL_NAME } from "@/inngest/channels/http-request";
+import { fetchHttpRequestRealtimeToken } from "@/lib/nodes/http-request.actions";
 
 type HttpRequestNodeData = {
   variableName?: string;
@@ -17,18 +20,17 @@ type HttpRequestNodeData = {
 type HttpRequestNodeType = Node<HttpRequestNodeData>;
 
 export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
-  const nodeStatus = "initial";
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setNodes } = useReactFlow();
 
-  //   const nodeStatus = useNodeStatus({
-  //     nodeId: props.id,
-  //     channel: HTTP_REQUEST_CHANNEL_NAME,
-  //     topic: "status",
-  //     refreshToken: fetchHttpRequestRealtimeToken,
-  //   });
+  const nodeStatus = useNodeStatus({
+    nodeId: props.id,
+    channel: HTTP_REQUEST_CHANNEL_NAME,
+    topic: "status",
+    refreshToken: fetchHttpRequestRealtimeToken,
+  });
 
-  //   const handleOpenSettings = () => setDialogOpen(true);
+  const handleOpenSettings = () => setDialogOpen(true);
 
   const handleSubmit = (values: HttpRequestFormTypes) => {
     setNodes((nodes) =>
@@ -61,8 +63,8 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
         name="HTTP Request"
         status={nodeStatus}
         description={description}
-        onSettings={() => setDialogOpen(true)}
-        onDoubleClick={() => setDialogOpen(true)}
+        onSettings={handleOpenSettings}
+        onDoubleClick={handleOpenSettings}
       />
     </>
   );
